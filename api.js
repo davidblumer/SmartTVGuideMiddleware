@@ -53,7 +53,7 @@ class Api {
 	}
 
 	userSwitchedChannel(channel) {
-		return Api.post('user-switched-channel');
+		return Api.get(`user-switched-channel/${channel}`);
 	}
 }
 
