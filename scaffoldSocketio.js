@@ -14,7 +14,7 @@ class Device {
 	constructor(socket) {
 		this.qrCode = '';
 		this.type = socket.type;
-		this.uuid = socket.uuid;
+		this.udid = socket.udid;
 		this.socket = socket;
 	}
 }
