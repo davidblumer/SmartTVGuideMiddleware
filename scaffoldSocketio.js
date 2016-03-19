@@ -23,6 +23,15 @@ class Pair {
 		this.tv = tv;
 		this.smartphone = smartphone;
 	}
+
+	emit(message, data) {
+		if (this.tv && this.tv.socket) {
+			this.tv.socket.emit(message, data);
+		}
+		if (this.smartphone && this.smartphone.socket) {
+			this.smartphone.socket.emit(message, data);
+		}
+	}
 }
 
 module.exports = (io)=> {
@@ -31,12 +40,20 @@ module.exports = (io)=> {
 		const data = socket.request;
 		socket.type = data._query['type'];
 		socket.udid = data._query['udid'];
-		console.log(`new device ${socket.type} ${socket.udid}`);
+		console.log(`new device ${socket.type} |||||| ${socket.udid}`);
 		next();
 	});
 
 	// Device connected, bind listeners and events.
 	io.on('connection', (socket)=> {
+
+		const findPair = (udid)=> {
+			return _.find(pairedDevices, (pair)=> {
+				return (pair.smartphone.udid === udid) ||
+					(pair.tv.udid === udid);
+			});
+		};
+
 		socket.emit('connected');
 		// send connection event to backend. not really useful right now but who cares :D
 		api.userConnected();
@@ -50,6 +67,11 @@ module.exports = (io)=> {
 			_.remove(unboundDevices, (device)=> {
 				return device.udid === socket.udid;
 			});
+
+			const foundPair = findPair(socket.udid);
+			if (foundPair) {
+				foundPair.emit('pair_disconnected');
+			}
 
 			// send disconnect event to backend. not really useful right now but who cares :D
 			api.userDisconnected();
@@ -78,30 +100,63 @@ module.exports = (io)=> {
 			});
 		} else if (socket.type === constants.PHONE) {
 			socket.on('selection_down', ()=> {
+				let foundPair = findPair(socket.udid);
+				if (foundPair) {
+					foundPair.tv.socket.emit('selection_down');
+					console.log('found_pair');
+				} else {
+					console.log('pair_not_found');
+				}
 			});
 			socket.on('selection_up', ()=> {
+				let foundPair = findPair(socket.udid);
+				if (foundPair) {
+					foundPair.tv.socket.emit('selection_up');
+					console.log('found_pair');
+				} else {
+					console.log('pair_not_found');
+				}
 			});
 			socket.on('selection_click', ()=> {
+				let foundPair = findPair(socket.udid);
+				if (foundPair) {
+					foundPair.tv.socket.emit('selection_click');
+					console.log('found_pair');
+				} else {
+					console.log('pair_not_found');
+				}
 			});
 			socket.on('selection_remove', ()=> {
+				let foundPair = findPair(socket.udid);
+				if (foundPair) {
+					foundPair.tv.socket.emit('selection_remove');
+					console.log('found_pair');
+				} else {
+					console.log('pair_not_found');
+				}
 			});
 			socket.on('send_code', (code)=> {
-				console.log('send_code', code);
 				let foundTv = _.find(unboundDevices, (device)=> {
 					return device.udid === code;
 				});
 				if (foundTv) {
-					console.log('found_tv', code);
+					console.log(`push tv ${foundTv.udid} and smartphone ${thisDevice.udid}`);
 					pairedDevices.push(new Pair(foundTv, thisDevice));
+
 					_.remove(unboundDevices, (device)=> {
-						return device.udid === code;
+						const find = device.udid === code || foundTv.udid === code;
+						console.log(`remove unbound find ${find}`);
+						return find;
 					});
 					foundTv.socket.emit('receive_code', code);
 					socket.emit('tv_found');
-				} else {
-					console.log('tv_not_found');
 				}
 			});
 		}
 	});
 };
+
+setInterval(()=> {
+	console.log('boundDevices', pairedDevices.length);
+	console.log('unboundDevices', unboundDevices.length);
+}, 2000);
