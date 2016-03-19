@@ -5,8 +5,7 @@ const constants = require('./constants');
 // ########################################################################################################################
 const express = require('express'),
 	http = require('http'),
-	socketio = require('socket.io'),
-	request = require('request');
+	socketio = require('socket.io');
 
 // ########################################################################################################################
 // # Instances
