@@ -7,6 +7,6 @@ app.get('/', (req, res)=> {
 	res.json({version: constants.VERSION, description: constants.DESCRIPTION});
 });
 
-http.listen(PORT, ()=> {
+http.listen(constants.PORT, ()=> {
 	console.log(`listening on *:${constants.PORT}`);
 });
