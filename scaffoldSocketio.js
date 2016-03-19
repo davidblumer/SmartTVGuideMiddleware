@@ -37,6 +37,11 @@ module.exports = (io)=> {
 
 		socket.on('disconnect', ()=> {
 			console.log('user disconnected');
+
+			_.remove(unboundDevices, (device)=>{
+				return device.udid === socket.udid;
+			});
+
 			api.userDisconnected();
 		});
 
