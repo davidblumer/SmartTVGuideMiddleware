@@ -11,11 +11,12 @@ class Api {
 		this.base = constants.API;
 	}
 
-	static post(path, data) {
+	post(path, data) {
+		console.log(`[POST]${this.base}${path}`);
 		return new Promise((resolve, reject)=> {
 			request({
 				method: 'POST',
-				uri: `${base}${path}`,
+				uri: `${this.base}${path}`,
 				json: true,
 				body: data
 			}, (error, response, body)=> {
@@ -28,11 +29,12 @@ class Api {
 		});
 	}
 
-	static get(path) {
+	get(path) {
+		console.log(`[GET]${this.base}${path}`);
 		return new Promise((resolve, reject)=> {
 			request({
 				method: 'GET',
-				uri: `${base}${path}`,
+				uri: `${this.base}${path}`,
 				json: true
 			}, (error, response, body)=> {
 				if (error) {
@@ -45,15 +47,15 @@ class Api {
 	}
 
 	userConnected() {
-		return Api.post('user-connected');
+		return this.post('user-connected');
 	}
 
 	userDisconnected() {
-		return Api.post('user-disconnected');
+		return this.post('user-disconnected');
 	}
 
 	userSwitchedChannel(channel) {
-		return Api.get(`user-switched-channel/${channel}`);
+		return this.get(`user-switched-channel/${channel}`);
 	}
 }
 
