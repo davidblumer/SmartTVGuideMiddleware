@@ -7,15 +7,21 @@ const _ = require('lodash');
 const constants = require('./constants'),
 	api = require('./api');
 
-let boundDevices = new Map(); // devices that are bound. tv <> smartphone
+let pairedDevices = new Array(); // devices that are bound. tv <> smartphone
 let unboundDevices = new Array(); // random unbound devices. tv | smartphone | smartphone | .... | tv
 
 class Device {
 	constructor(socket) {
-		this.qrCode = '';
 		this.type = socket.type;
 		this.udid = socket.udid;
 		this.socket = socket;
+	}
+}
+
+class Pair {
+	constructor(tv, smartphone) {
+		this.tv = tv;
+		this.smartphone = smartphone;
 	}
 }
 
@@ -31,12 +37,13 @@ module.exports = (io)=> {
 
 	// Device connected, bind listeners and events.
 	io.on('connection', (socket)=> {
-
+		socket.emit('connected');
 		// send connection event to backend. not really useful right now but who cares :D
 		api.userConnected();
 
 		// append the new device to the unbound list for later.
-		unboundDevices.push(new Device(socket));
+		let thisDevice = new Device(socket);
+		unboundDevices.push(thisDevice);
 
 		// socket disconnects, remove it from the lists.
 		socket.on('disconnect', ()=> {
@@ -68,6 +75,32 @@ module.exports = (io)=> {
 			socket.on('request_code', ()=> {
 				console.log(`user wants a code`);
 				socket.emit('receive_code', {code: socket.udid});
+			});
+		} else if (socket.type === constants.PHONE) {
+			socket.on('selection_down', ()=> {
+			});
+			socket.on('selection_up', ()=> {
+			});
+			socket.on('selection_click', ()=> {
+			});
+			socket.on('selection_remove', ()=> {
+			});
+			socket.on('send_code', (code)=> {
+				console.log('send_code', code);
+				let foundTv = _.find(unboundDevices, (device)=> {
+					return device.udid === code;
+				});
+				if (foundTv) {
+					console.log('found_tv', code);
+					pairedDevices.push(new Pair(foundTv, thisDevice));
+					_.remove(unboundDevices, (device)=> {
+						return device.udid === code;
+					});
+					foundTv.socket.emit('receive_code', code);
+					socket.emit('tv_found');
+				} else {
+					console.log('tv_not_found');
+				}
 			});
 		}
 	});

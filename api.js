@@ -12,7 +12,7 @@ class Api {
 	}
 
 	post(path, data) {
-		console.log(`[POST]${this.base}${path}`);
+		console.log(`[POST] ${this.base}${path}`);
 		return new Promise((resolve, reject)=> {
 			request({
 				method: 'POST',
@@ -30,7 +30,7 @@ class Api {
 	}
 
 	get(path) {
-		console.log(`[GET]${this.base}${path}`);
+		console.log(`[GET] ${this.base}${path}`);
 		return new Promise((resolve, reject)=> {
 			request({
 				method: 'GET',
