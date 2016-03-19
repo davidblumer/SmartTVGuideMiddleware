@@ -14,6 +14,7 @@ class Device {
 	constructor(socket) {
 		this.qrCode = '';
 		this.type = socket.type;
+		this.uuid = socket.uuid;
 		this.socket = socket;
 	}
 }
@@ -22,6 +23,9 @@ module.exports = (io)=> {
 	io.use((socket, next)=> {
 		const data = socket.request;
 		socket.type = data._query['type'];
+		socket.udid = data._query['udid'];
+
+		console.log(`new device ${socket.type} ${socket.udid}`);
 		next();
 	});
 
@@ -38,12 +42,18 @@ module.exports = (io)=> {
 
 		socket.on('switch_channel', (channel)=> {
 			console.log(`user switched the channel to ${channel}`);
-			api.userSwitchedChannel();
+			api.userSwitchedChannel(channel)
+				.then((response)=> {
+
+				})
+				.catch((error)=> {
+					
+				});
 		});
 
 		socket.on('request_code', ()=> {
 			console.log(`user wants a code`);
-			socket.emit('receive_code', Math.random());
+			socket.emit('receive_code', {code: socket.uuid});
 		});
 	});
 };
