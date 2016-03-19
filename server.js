@@ -5,7 +5,8 @@ const constants = require('./constants');
 // ########################################################################################################################
 const express = require('express'),
 	http = require('http'),
-	socketio = require('socket.io');
+	socketio = require('socket.io'),
+	request = require('request');
 
 // ########################################################################################################################
 // # Instances
@@ -29,6 +30,10 @@ io.on('connection', (socket)=> {
 
 	socket.on('disconnect', ()=> {
 		console.log('user disconnected');
+	});
+
+	socket.on('switch-channel', (channel)=> {
+		console.log(`user switched the channel to ${channel}`);
 	});
 });
 
