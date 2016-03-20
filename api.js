@@ -55,7 +55,19 @@ class Api {
 	}
 
 	userSwitchedChannel(channel) {
-		return this.get(`user-switched-channel/${channel}`);
+		return new Promise((resolve, reject)=>{
+			request({
+				method: 'GET',
+				uri: `https://1c4bc580.ngrok.io/api/show/${channel}`,
+				json: true
+			}, (error, response, body)=> {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(body);
+				}
+			});
+		})
 	}
 }
 

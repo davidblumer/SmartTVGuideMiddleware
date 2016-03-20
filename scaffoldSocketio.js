@@ -63,6 +63,33 @@ module.exports = (io)=> {
 
 	// Device connected, bind listeners and events.
 	io.on('connection', (socket)=> {
+		socket.on('beard_show', ()=> {
+			io.sockets.emit('beard_show')
+		});
+		socket.on('beard_hide', ()=> {
+			io.sockets.emit('beard_hide')
+		});
+		socket.on('beard_set_position', (data)=> {
+			io.sockets.emit('beard_set_position', data)
+		});
+		socket.on('beard_set_rotation', (data)=> {
+			io.sockets.emit('beard_set_rotation', data)
+		});
+		socket.on('beard_set_zoom', (data)=> {
+			io.sockets.emit('beard_set_zoom', data)
+		});
+		socket.on('beard_set_index', (data)=> {
+			io.sockets.emit('beard_set_index', data)
+		});
+		socket.on('beard_update', (data)=> {
+			io.sockets.emit('beard_update', data)
+		});
+		socket.on('send_message', (data)=> {
+			console.log('send_message', data.message);
+			io.sockets.emit('receive_message', data)
+		});
+
+
 		const foundUnboundDevice = _.find(unboundDevices, findDeviceById(socket.udid));
 		if (!foundUnboundDevice) {
 			unboundDevices.push(new Device(socket));
@@ -104,6 +131,7 @@ module.exports = (io)=> {
 				api.userSwitchedChannel(data.channel)
 					.then((response)=> {
 						// on success send the meta data back to the tv and smartphone
+						socket.emit('receive_switch_channel', response);
 					})
 					.catch((error)=> {
 						// on error send the error message to the tv and smartphone
@@ -130,7 +158,6 @@ module.exports = (io)=> {
 				}
 			});
 			socket.on('selection_up', ()=> {
-
 				const foundPair = _.find(pairedDevices, (pair)=> {
 					return pair.smartphone.udid === socket.udid;
 				});
@@ -153,7 +180,6 @@ module.exports = (io)=> {
 				}
 			});
 			socket.on('selection_remove', ()=> {
-
 				const foundPair = _.find(pairedDevices, (pair)=> {
 					return pair.smartphone.udid === socket.udid;
 				});
