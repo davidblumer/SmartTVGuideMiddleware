@@ -88,6 +88,10 @@ module.exports = (io)=> {
 			console.log('send_message', data.message);
 			io.sockets.emit('receive_message', data)
 		});
+		socket.on('create_vote', (data)=> {
+			console.log('create_vote', data.message);
+			io.sockets.emit('create_vote', data)
+		});
 
 
 		const foundUnboundDevice = _.find(unboundDevices, findDeviceById(socket.udid));
