@@ -102,17 +102,8 @@ module.exports = (io)=> {
 			io.sockets.emit('receive_event', event)
 		});
 		
-		socket.on('send_weather', (event)=> {
-			io.sockets.emit('receive_event', event)
-		});
-		socket.on('send_program', (event)=> {
-			io.sockets.emit('receive_program', event)
-		});
-		socket.on('send_travel', (event)=> {
-			io.sockets.emit('receive_travel', event)
-		});
-		socket.on('send_twitter', (event)=> {
-			io.sockets.emit('receive_twitter', event)
+		socket.on('new_content', (event)=> {
+			io.sockets.emit('new_content', event)
 		});
 
 		const foundUnboundDevice = _.find(unboundDevices, findDeviceById(socket.udid));
