@@ -89,14 +89,18 @@ module.exports = (io)=> {
 			io.sockets.emit('receive_message', data)
 		});
 		socket.on('create_vote', (data)=> {
-			console.log('create_vote', data.message);
 			io.sockets.emit('create_vote', data)
+		});
+		socket.on('new_vote', (data)=> {
+			io.sockets.emit('new_vote', data)
+		});
+		socket.on('vote', (data)=> {
+			io.sockets.emit('vote', data)
 		});
 		socket.on('send_event', (event)=> {
 			console.log('send_event', JSON.stringify(event));
 			io.sockets.emit('receive_event', event)
 		});
-
 
 		const foundUnboundDevice = _.find(unboundDevices, findDeviceById(socket.udid));
 		if (!foundUnboundDevice) {
