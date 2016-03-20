@@ -101,6 +101,19 @@ module.exports = (io)=> {
 			console.log('send_event', JSON.stringify(event));
 			io.sockets.emit('receive_event', event)
 		});
+		
+		socket.on('send_weather', (event)=> {
+			io.sockets.emit('receive_event', event)
+		});
+		socket.on('send_program', (event)=> {
+			io.sockets.emit('receive_program', event)
+		});
+		socket.on('send_travel', (event)=> {
+			io.sockets.emit('receive_travel', event)
+		});
+		socket.on('send_twitter', (event)=> {
+			io.sockets.emit('receive_twitter', event)
+		});
 
 		const foundUnboundDevice = _.find(unboundDevices, findDeviceById(socket.udid));
 		if (!foundUnboundDevice) {
